@@ -54,4 +54,4 @@ The guide includes all commands, Dockerfile, Kubernetes YAML, command outputs, t
 
 ---
 
-**Repository:** https://github.com/openhelpdevops/devops_project1_withoutCICD
+
