@@ -604,30 +604,6 @@ a1e6e1a167f1: Pushed
 v1: digest: sha256:bea68370d99905685f284ef3ee4048e141e7880f55e8633311d9071a26cdec4a size: 1838
 ```
 
----
-
-## 21. Alternative Tag Used in Lab
-
-The original lab also used the `sreejith` path in Nexus.
-
-```bash
-root@ci:~# docker tag bank/account-service:v1 nexus.openhelp.net/docker-private/bank/account-service:v1
-root@ci:~# docker push nexus.openhelp.net/docker-private/bank/account-service:v1
-```
-
-### Sample Output
-
-```text
-The push refers to repository [nexus.openhelp.net/docker-private/bank/account-service]
-a7428f4f5c1d: Pushed
-689b91d88a0f: Pushed
-a149c623348d: Pushed
-f00bd8c488bb: Pushed
-3a5fcf11a177: Pushed
-d019da57f72c: Pushed
-a1e6e1a167f1: Pushed
-v1: digest: sha256:bea68370d99905685f284ef3ee4048e141e7880f55e8633311d9071a26cdec4a size: 1838
-```
 
 ---
 
