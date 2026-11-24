@@ -342,43 +342,49 @@ The Ubuntu CI host is now ready to build and run Docker images.
 
 ## 4. What Is a CI/CD Pipeline?
 
-1. A CI/CD pipeline automates the process from code change to deployment.
-2. **Continuous Integration** automatically builds and tests every change.
-3. **Continuous Delivery** prepares a release and normally waits for approval.
-4. **Continuous Deployment** automatically releases every successful change.
-5. CI/CD makes releases faster, consistent, and less error-prone.
+A **CI/CD pipeline** is an automated workflow that takes application code from a developer, builds it, tests it, packages it, and deploys it to an environment such as Kubernetes or OpenShift.
 
-<img width="1450" height="1564" alt="03_cicd_pipeline" src="https://github.com/user-attachments/assets/0af4e0c4-0a35-4280-9082-97ccd8c52edc" />
+- **CI — Continuous Integration:** Every code change is automatically built and tested.
+- **Continuous Delivery:** The application is ready for production, but deployment normally requires approval.
+- **Continuous Deployment:** Every successful change is automatically deployed to production.
 
-### CI/CD Pipeline Steps
+The main purpose is to release software **faster, consistently, and with fewer manual errors**.
 
-| Step | What It Does | Main Owner or Tool |
+## Pipeline Flow
+
+```text
+Develop → Push → Build → Test → Scan → Package → Store → Deploy → Monitor
+```
+
+## Steps Involved
+
+| Step | What Happens | Owner or Tool |
 |---|---|---|
-| 1. Develop | Write the code and unit tests | Developers |
-| 2. Push | Store code and trigger the pipeline | GitHub or GitLab |
-| 3. Build and test | Compile, test, and scan the application | Jenkins, Maven, SonarQube, Trivy |
-| 4. Build image | Package the application as a container image | Docker or Buildah |
-| 5. Store image | Push the versioned image to a registry | Quay, Harbor, or Docker Hub |
-| 6. Approve and deploy | Approve when required and release the image | QA and DevOps teams |
-| 7. Run and monitor | Run the application and watch its health | OpenShift, Kubernetes, Operations, or SRE |
+| 1. Develop | Write application code and unit tests | Developer |
+| 2. Push | Push code to a Git repository and trigger the pipeline | GitHub or GitLab |
+| 3. Build | Compile the code and create an application package | Maven, Gradle, or npm |
+| 4. Test | Run unit and integration tests | JUnit, pytest, or Jest |
+| 5. Scan | Check code quality and security vulnerabilities | SonarQube or Trivy |
+| 6. Package | Build a versioned container image | Docker or Buildah |
+| 7. Store | Push the image to a container registry | Quay, Harbor, or Docker Hub |
+| 8. Deploy | Deploy the image to the target environment | Jenkins, Argo CD, Kubernetes, or OpenShift |
+| 9. Monitor | Check application health, logs, metrics, and alerts | Prometheus, Grafana, Operations, or SRE |
 
-### Small CI/CD Example
+## Simple Example
 
-A developer updates the **Payment Service** and pushes the code. Jenkins builds and tests it, Docker or Buildah creates `payment-service:2.0`, Quay stores the image, and OpenShift deploys it after approval.
+A developer pushes the **Payment Service** code to GitHub.
 
-### Team Responsibilities
+The pipeline then performs the following actions:
 
-- **Developers:** Write code and tests and fix pipeline failures.
-- **QA team:** Test the feature and approve a release when required.
-- **DevOps team:** Maintain the pipeline and deployment platform.
-- **Security team:** Define checks and review serious vulnerabilities.
-- **Operations or SRE team:** Monitor production and respond to failures.
-
----
-
-
-
-
+1. Jenkins downloads the source code.
+2. Maven builds the application.
+3. JUnit runs the automated tests.
+4. SonarQube checks the code quality.
+5. Trivy checks for security vulnerabilities.
+6. Docker or Buildah creates the `payment-service:2.0` image.
+7. The pipeline pushes the image to Quay.
+8. OpenShift deploys the new image.
+9. Prometheus and Grafana monitor the application.
 
 
 ## 1. Typical Banking / Insurance Microservices Architecture
