@@ -6,6 +6,62 @@ This document explains how to manually build, containerize, push, and deploy a S
 
 ---
 
+## Microservices
+
+Microservices is an **application architecture** where one large application is divided into multiple small, independent services.
+
+For example, an online shopping application can contain:
+
+- User Service
+- Product Service
+- Order Service
+- Payment Service
+- Notification Service
+
+Each service performs one specific business function and communicates with other services using:
+
+- REST APIs
+- gRPC
+- Messaging
+
+Each microservice can be:
+
+- Developed independently
+- Deployed independently
+- Updated independently
+- Scaled independently
+- Written using a different programming language, if required
+
+## Docker
+
+Docker is a **container technology** used to package and run an application with all its required dependencies.
+
+A Docker image contains:
+
+- Application code
+- Runtime, such as Java or Python
+- Required libraries
+- Application configuration
+
+When a Docker image is executed, it becomes a **Docker container**.
+
+## Relationship Between Microservices and Docker
+
+Microservices define **how an application is designed**.
+
+Docker defines **how the application or microservices are packaged and executed**.
+
+Each microservice can be packaged as a separate Docker image and executed as an independent Docker container.
+
+For example:
+
+- Order Microservice → Order Docker Container
+- Payment Microservice → Payment Docker Container
+- Inventory Microservice → Inventory Docker Container
+- Notification Microservice → Notification Docker Container
+
+
+
 ## 1. Typical Banking / Insurance Microservices Architecture
 
 In a banking or insurance domain, applications are commonly split into multiple microservices. Each team may own one service and use different technologies.
