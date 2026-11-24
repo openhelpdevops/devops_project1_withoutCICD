@@ -455,10 +455,12 @@ flowchart TD
     class run runCls
 ```
 
+---
+
 Docker effectively runs:
+
 cd /app
 java -jar app.jar
----
 
 ## 12. DevOps Team Responsibility
 
