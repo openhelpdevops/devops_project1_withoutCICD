@@ -4,6 +4,286 @@ This document explains how to manually build, containerize, push, and deploy a S
 
 > **Note:** This guide keeps the same manual flow used in the original steps. Real passwords are replaced with placeholders such as `<NEXUS_PASSWORD>` for safety. Replace them with your actual lab credentials only when executing commands.
 
+
+## Install Docker on an Ubuntu CI Host
+
+> **Important:** Use these steps on a standalone Ubuntu CI host. Do not run them on a Kubernetes master or worker node because they may replace the existing container runtime.
+
+## Step 1: Remove Conflicting Packages
+
+Remove old or conflicting Docker and containerd packages:
+
+```bash
+for package in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do
+  if dpkg -s "$package" >/dev/null 2>&1; then
+    sudo apt-get remove -y "$package"
+  fi
+done
+```
+
+## Step 2: Install Required Packages
+
+Update the package information:
+
+```bash
+sudo apt-get update
+```
+
+Install `ca-certificates` and `curl`:
+
+```bash
+sudo apt-get install -y ca-certificates curl
+```
+
+## Step 3: Add the Docker GPG Key
+
+Create the apt keyring directory:
+
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings
+```
+
+Download the official Docker GPG key:
+
+```bash
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+  -o /etc/apt/keyrings/docker.asc
+```
+
+Give apt permission to read the key:
+
+```bash
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+```
+
+## Step 4: Add the Docker Repository
+
+Identify the Ubuntu release and system architecture:
+
+```bash
+DOCKER_ARCH="$(dpkg --print-architecture)"
+DOCKER_CODENAME="$(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")"
+```
+
+Add the official Docker repository:
+
+```bash
+sudo tee /etc/apt/sources.list.d/docker.sources >/dev/null <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: ${DOCKER_CODENAME}
+Components: stable
+Architectures: ${DOCKER_ARCH}
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+```
+
+Update the package information:
+
+```bash
+sudo apt-get update
+```
+
+## Step 5: Install Docker Engine
+
+Install Docker Engine, Docker CLI, containerd, Buildx and Docker Compose:
+
+```bash
+sudo apt-get install -y \
+  docker-ce \
+  docker-ce-cli \
+  containerd.io \
+  docker-buildx-plugin \
+  docker-compose-plugin
+```
+
+The following packages are installed:
+
+- `docker-ce` — Docker Engine
+- `docker-ce-cli` — Docker command-line client
+- `containerd.io` — Container runtime
+- `docker-buildx-plugin` — Advanced image-building plugin
+- `docker-compose-plugin` — Docker Compose plugin
+
+## Step 6: Start Docker Services
+
+Enable and start Docker:
+
+```bash
+sudo systemctl enable --now docker
+```
+
+Enable and start containerd:
+
+```bash
+sudo systemctl enable --now containerd
+```
+
+Verify the Docker service:
+
+```bash
+sudo systemctl status docker --no-pager
+```
+
+## Step 7: Test Docker
+
+Check the installed Docker version:
+
+```bash
+sudo docker version
+```
+
+Check Docker Compose:
+
+```bash
+sudo docker compose version
+```
+
+Run the Docker test container:
+
+```bash
+sudo docker run --rm hello-world
+```
+
+A successful result confirms that Docker can download and run containers.
+
+## Step 8: Give Jenkins Permission to Use Docker
+
+If Jenkins runs the CI jobs, add the `jenkins` user to the Docker group:
+
+```bash
+sudo usermod -aG docker jenkins
+```
+
+Verify the Jenkins group membership:
+
+```bash
+id jenkins
+```
+
+Restart Jenkins so that it receives the new group membership:
+
+```bash
+sudo systemctl restart jenkins
+```
+
+Verify that Jenkins is running:
+
+```bash
+sudo systemctl status jenkins --no-pager
+```
+
+Test Docker using the Jenkins account:
+
+```bash
+sudo -u jenkins -H docker version
+```
+
+Run a test container using the Jenkins account:
+
+```bash
+sudo -u jenkins -H docker run --rm hello-world
+```
+
+> **Security warning:** Membership in the `docker` group provides root-equivalent access. Only trusted CI users should be added to this group.
+
+## Step 9: Give a Normal User Permission to Use Docker
+
+If a normal login user needs Docker access, run:
+
+```bash
+sudo usermod -aG docker "$USER"
+```
+
+Apply the new group membership:
+
+```bash
+newgrp docker
+```
+
+Verify that Docker works without `sudo`:
+
+```bash
+docker version
+docker run --rm hello-world
+```
+
+Alternatively, log out and log in again after adding the user to the Docker group.
+
+## Step 10: Final Verification
+
+Display detailed Docker information:
+
+```bash
+docker info
+```
+
+Verify Docker Buildx:
+
+```bash
+docker buildx version
+```
+
+Verify Docker Compose:
+
+```bash
+docker compose version
+```
+
+List running containers:
+
+```bash
+docker ps
+```
+
+List all containers:
+
+```bash
+docker ps -a
+```
+
+## Build a Docker Image
+
+Build an image from the Dockerfile in the current directory:
+
+```bash
+docker build -t my-application:1.0 .
+```
+
+List available Docker images:
+
+```bash
+docker images
+```
+
+## Run the Application Container
+
+Run the application in the background:
+
+```bash
+docker run -d \
+  --name my-application \
+  -p 8080:8080 \
+  my-application:1.0
+```
+
+Verify the running container:
+
+```bash
+docker ps
+```
+
+View the application logs:
+
+```bash
+docker logs -f my-application
+```
+
+The Ubuntu CI host is now ready to build and run Docker images.
+
+
+
+
 ---
 
 ## Microservices
