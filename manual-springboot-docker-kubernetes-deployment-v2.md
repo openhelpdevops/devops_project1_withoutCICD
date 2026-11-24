@@ -282,63 +282,102 @@ docker logs -f my-application
 The Ubuntu CI host is now ready to build and run Docker images.
 
 
+---
 
+## 1. Monolithic Architecture
+
+1. A monolithic application contains all features in one application.
+2. All modules normally share one codebase and database.
+3. The complete application is built and deployed together.
+4. It is simple and suitable for small applications and teams.
+5. A small change or scaling requirement can affect the whole application.
+
+**Example:** User, Product, Order, and Payment are packaged in one `shopping-app.jar` file.
+
+<img width="2662" height="664" alt="01_monolithic_architecture" src="https://github.com/user-attachments/assets/baaec206-ccce-461c-abb6-8478969e8745" />
+
+
+| Advantages | Disadvantages |
+|---|---|
+| Simple to develop and deploy | Whole application must usually be redeployed |
+| Easy for a small team | Whole application normally scales together |
+| Requires less infrastructure | One failure can affect the complete application |
 
 ---
 
-## Microservices
+## 2. Microservices Architecture
 
-Microservices is an **application architecture** where one large application is divided into multiple small, independent services.
+1. Microservices divide an application into small, independent services.
+2. Each service handles one business function, such as Orders or Payments.
+3. Services communicate using APIs, gRPC, messages, or events.
+4. Each service can be developed, deployed, and scaled independently.
+5. Microservices provide flexibility but add operational complexity.
 
-For example, an online shopping application can contain:
+**Example:** User, Product, Order, and Payment run as separate services.
 
-- User Service
-- Product Service
-- Order Service
-- Payment Service
-- Notification Service
+<img width="2131" height="993" alt="02_microservices_architecture" src="https://github.com/user-attachments/assets/b9203955-926c-49c2-abcc-1198259a7307" />
 
-Each service performs one specific business function and communicates with other services using:
 
-- REST APIs
-- gRPC
-- Messaging
+| Advantages | Disadvantages |
+|---|---|
+| Services deploy independently | More difficult to design and operate |
+| Busy services scale independently | Network and service failures must be handled |
+| Teams can work independently | Requires monitoring, security, and automation |
 
-Each microservice can be:
+---
 
-- Developed independently
-- Deployed independently
-- Updated independently
-- Scaled independently
-- Written using a different programming language, if required
+## 3. Quick Comparison
 
-## Docker
+| Area | Monolithic | Microservices |
+|---|---|---|
+| Design | One application | Multiple services |
+| Deployment | Deploy everything | Deploy one service |
+| Scaling | Scale everything | Scale the required service |
+| Complexity | Lower | Higher |
+| Best for | Small applications | Large applications and teams |
 
-Docker is a **container technology** used to package and run an application with all its required dependencies.
+> **Interview tip:** Start with a monolith when the application is small. Use microservices when independent teams, deployments, and scaling provide real value.
 
-A Docker image contains:
+---
 
-- Application code
-- Runtime, such as Java or Python
-- Required libraries
-- Application configuration
+## 4. What Is a CI/CD Pipeline?
 
-When a Docker image is executed, it becomes a **Docker container**.
+1. A CI/CD pipeline automates the process from code change to deployment.
+2. **Continuous Integration** automatically builds and tests every change.
+3. **Continuous Delivery** prepares a release and normally waits for approval.
+4. **Continuous Deployment** automatically releases every successful change.
+5. CI/CD makes releases faster, consistent, and less error-prone.
 
-## Relationship Between Microservices and Docker
+<img width="1450" height="1564" alt="03_cicd_pipeline" src="https://github.com/user-attachments/assets/0af4e0c4-0a35-4280-9082-97ccd8c52edc" />
 
-Microservices define **how an application is designed**.
+### CI/CD Pipeline Steps
 
-Docker defines **how the application or microservices are packaged and executed**.
+| Step | What It Does | Main Owner or Tool |
+|---|---|---|
+| 1. Develop | Write the code and unit tests | Developers |
+| 2. Push | Store code and trigger the pipeline | GitHub or GitLab |
+| 3. Build and test | Compile, test, and scan the application | Jenkins, Maven, SonarQube, Trivy |
+| 4. Build image | Package the application as a container image | Docker or Buildah |
+| 5. Store image | Push the versioned image to a registry | Quay, Harbor, or Docker Hub |
+| 6. Approve and deploy | Approve when required and release the image | QA and DevOps teams |
+| 7. Run and monitor | Run the application and watch its health | OpenShift, Kubernetes, Operations, or SRE |
 
-Each microservice can be packaged as a separate Docker image and executed as an independent Docker container.
+### Small CI/CD Example
 
-For example:
+A developer updates the **Payment Service** and pushes the code. Jenkins builds and tests it, Docker or Buildah creates `payment-service:2.0`, Quay stores the image, and OpenShift deploys it after approval.
 
-- Order Microservice → Order Docker Container
-- Payment Microservice → Payment Docker Container
-- Inventory Microservice → Inventory Docker Container
-- Notification Microservice → Notification Docker Container
+### Team Responsibilities
+
+- **Developers:** Write code and tests and fix pipeline failures.
+- **QA team:** Test the feature and approve a release when required.
+- **DevOps team:** Maintain the pipeline and deployment platform.
+- **Security team:** Define checks and review serious vulnerabilities.
+- **Operations or SRE team:** Monitor production and respond to failures.
+
+---
+
+
+
 
 
 
